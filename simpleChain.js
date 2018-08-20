@@ -89,7 +89,7 @@ class Blockchain {
     constructor() {
         this.levelDB = new LevelDB();
         // get current height 
-        this.getBlockHeight().then((value) => {
+        this.levelDB.getLength().then((value) => {
             // only the first block is create in the constructor
             if (!value) this.addBlock(new Block("First block in the . - Genesis block"));
         });
@@ -206,3 +206,5 @@ class Blockchain {
         })
     }
 }
+
+module.exports = Blockchain
