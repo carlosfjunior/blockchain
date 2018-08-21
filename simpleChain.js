@@ -44,17 +44,23 @@ class LevelDB {
 
     // Add data to levelDB with value
     addDataToLevelDB(value) {
-        let i = 0;
-        db.createReadStream().on('data', (data) => {
-            i++;
-        }).on('error', (err) => {
-            return console.log('Unable to read data stream!', err)
-        }).on('close', () => {
-            console.log('Block #' + i);
-            console.log('Value:' + value);
-            db.put(i, value, (err) => {
-                if (err) return console.log('Block ' + i + ' submission failed', err);
-            })
+        return new Promise((resolve, reject) => {
+            let i = 0;
+            db.createReadStream().on('data', (data) => {
+                i++;
+            }).on('error', (err) => {
+                return console.log('Unable to read data stream!', err)
+            }).on('close', () => {
+                console.log('Block #' + i);
+                console.log('Value:' + value);
+                db.put(i, value, (err) => {
+                    if (err) return console.log('Block ' + i + ' submission failed', err);
+                    db.get(i, (err, value) => {
+                        if (err) return console.log('Block ' + i + ' submission failed', err);
+                        resolve(value);
+                    })
+                })
+            });
         });
     }
 
@@ -97,8 +103,8 @@ class Blockchain {
 
     // Add new block
     addBlock(newBlock) {
-        this.levelDB.getLength()
-            .then(length => {
+        return new Promise(resolve => { 
+            this.levelDB.getLength().then(length => {
                 new Promise(resolve => {
                     // Block height
                     newBlock.height = length;
@@ -118,9 +124,10 @@ class Blockchain {
                     // Block hash with SHA256 using newBlock and converting to a string
                     newBlock.hash = SHA256(JSON.stringify(newBlock)).toString();
                     // Adding block object to chain
-                    this.levelDB.addDataToLevelDB(JSON.stringify(newBlock));
+                    this.levelDB.addDataToLevelDB(JSON.stringify(newBlock)).then(value => resolve(JSON.parse(value)));
                 })
-            });
+            })
+        });
     }
 
     // Get block height
@@ -190,7 +197,7 @@ class Blockchain {
                             }
                         }).catch(e => {
                             // Don't have next block
-                        });                       
+                        });
                     })
                 }
                 resolve(errorLog);
@@ -207,4 +214,4 @@ class Blockchain {
     }
 }
 
-module.exports = Blockchain
+module.exports = { Block, Blockchain }
