@@ -12,7 +12,7 @@ const server = Hapi.server({
     port: 8000
 });
 
-// Add the route
+// GET Block endpoint using URL path with block height parameter.
 server.route({
     method: 'GET',
     path: '/block/{height}',
@@ -28,6 +28,7 @@ server.route({
 }
 );
 
+// POST Block endpoint using key/value pair within request body.
 server.route({
     method: 'POST',
     path: '/block',
