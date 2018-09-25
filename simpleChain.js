@@ -22,6 +22,39 @@ class LevelDB {
         });
     }
 
+    getByAddress(address) {
+        return new Promise(resolve => {
+            let blocks = [];
+            db.createReadStream({
+                keys: false
+            })
+                .on('data', (data) => {
+                    let value = JSON.parse(data);
+                    if (typeof value.body === 'object' && value.body.address !== undefined && value.body.address === address) blocks.push(value);
+                })
+                .on('close', () => {
+                    resolve(blocks);
+                });
+        });
+    }
+
+    getByHash(hash) {
+        return new Promise(resolve => {
+            let blocks = [];
+            db.createReadStream({
+                keys: false
+            })
+                .on('data', (data) => {
+                    let value = JSON.parse(data);
+                    if (value.hash == hash) blocks.push(value);
+                    
+                })
+                .on('close', () => {
+                    resolve(blocks[0]);
+                });
+        });
+    }
+
     // Add data to levelDB with key/value pair
     addLevelDBData(key, value) {
         db.put(key, value, (err) => {
@@ -103,7 +136,7 @@ class Blockchain {
 
     // Add new block
     addBlock(newBlock) {
-        return new Promise(resolve => { 
+        return new Promise(resolve => {
             this.levelDB.getLength().then(length => {
                 new Promise(resolve => {
                     // Block height
@@ -136,6 +169,22 @@ class Blockchain {
             .then(length => {
                 return length - 1;
             }).catch(error => {
+                throw new Error(error);
+            });
+    }
+
+    getBlockByHash(hash) {
+        return this.levelDB.getByHash(hash)
+            .then(block => block)
+            .catch(error => {
+                throw new Error(error);
+            });
+    }
+
+    getBlockByAddress(address) {
+        return this.levelDB.getByAddress(address)
+            .then(block => block)
+            .catch(error => {
                 throw new Error(error);
             });
     }
