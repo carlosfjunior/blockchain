@@ -75,6 +75,7 @@ server.route({
                 if (value) {
                     request.payload.star.story = Buffer.from(request.payload.star.story, 'utf8').toString('hex');
                     blockchain.addBlock(new simpleChain.Block(request.payload)).then(value => {
+                        sessionValidation.remove(request.payload.address);
                         resolve(h.response(value));
                     }).catch(error => {
                         resolve({ message: error.message });
@@ -94,7 +95,7 @@ server.route({
                     dec: Joi.string().required(),
                     mag: Joi.string().optional(),
                     cen: Joi.string().optional(),
-                    story: Joi.string().max(250).required()
+                    story: Joi.string().regex(/^[\x00-\x7F]+$/).max(500).required()
                 })
             })
         }

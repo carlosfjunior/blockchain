@@ -30,8 +30,12 @@ class LevelDB {
                 } else {
                     resolve(value);
                 }
-            })
+            });
         });
+    }
+
+    remove(address) {
+        db.del(address);
     }
 }
 
@@ -123,6 +127,10 @@ class SessionValidation {
         }).catch(() => {
             throw new Error('Address not found.');
         })
+    }
+
+    remove(address) {
+        this.levelDB.remove(address);
     }
 
 }
