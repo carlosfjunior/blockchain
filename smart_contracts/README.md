@@ -1,4 +1,4 @@
-#Decentralized Star Notary
+# Decentralized Star Notary
 
 ## Contract address
 0x122aD3c817cd8059927b9834A67442DA4013Bcb5
