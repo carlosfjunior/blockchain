@@ -4,9 +4,9 @@ contract('StarNotary', accounts => {
 
     const name = 'Star power 103!'
     const story = 'I love my wonderful star'
-    const dec = 'ra_032.155'
-    const mag = 'dec_121.874'
-    const cent = 'mag_245.978'
+    const dec = 'dev_032.155'
+    const mag = 'mag_121.874'
+    const cent = 'cent_245.978'
 
     let defaultAccount = accounts[0]
     let user1 = accounts[1]
